@@ -1,0 +1,126 @@
+
+
+1)	StudentIdnr->StudentName
+2)	StudentIdnr->login
+3)	login->Studentidnr
+4)	StudentIdnr->branchName
+5)	StudentIdnr->programName
+6)	programName->programAbbreviation
+7)	courseCode->courseName
+8)	courseCode->credits
+9)	courseCode->capacity
+10)	courseCode->departmentName
+11)	departmentName->departmentAbbreviation
+12)	departmentAbbreviation->departmentName
+13)	StudentIdnr courseCode->grade
+14)	StudentIdnr courseCode->position
+15)	position courseCode->studentIdnr
+
+
+
+
+
+
+The relations with a "*" (example *R) is the one that is not valid anymore.
+
+*R(studentIdnr, studentName, login, branchName, programName, programAbbreviation, courseCode, courseName, credits, departmentName, departmentAbbreviation, capacity, classification, grade, position) 
+
+Split R with studentIdnr
+*R1(studentIdnr, studentName, login, branchName, programName, programAbbreviation)
+*R2(studentIdnr, courseCode, courseName, credits, departmentName, departmentAbbreviation, capacity, classification, grade, position)
+
+Split R1 with programName
+R11(programName, programAbbreviation)
+R12(studentIdnr, studentName, login, branchName, programName)
+
+Split R2 with courseCode
+*R21(courseCode, courseName, credits, departmentName, departmentAbbreviation, capacity)
+*R22(studentIdnr, courseCode, classification, grade, position)
+
+Split R21 with departmmentName
+R211(departmentName, departmentAbbreviation)
+R212(courseCode, courseName, credits, departmentName, capacity)
+
+Split R22 with studentIdnr and courseCode
+R221(studentIdnr, courseCode, grade, position)
+R222(studentIdnr, courseCode, classification)
+
+
+Which gives us:
+
+R11(_programName_, programAbbreviation)
+
+
+R12(_studentIdnr_, studentName, login, branchName, programName)
+	(login)UNIQUE
+	(programName->R11.programName)
+	
+
+R211(departmentName, departmentAbbreviation)
+	(departmentAbbreviation)UNIQUE
+
+
+R212(_courseCode_, courseName, credits, departmentName, capacity)
+	(departmentName->R211.departmentName)
+
+
+R221(_studentIdnr_, _courseCode_, grade, position)  (MVD)
+	(courseCode, position)UNIQUE
+	(studentIdnr->R12.studentIdnr)
+	(courseCode-> R212.courseCode)
+
+
+R222(_studentIdnr_, _courseCode_, _classification_) (MVD)
+	(studentIdnr->R12.studentIdnr)
+	(courseCode-> R212.courseCode)
+
+
+The FD approach is successful until R22 is decomposed into R221 and R222, where R222 is an unuseful table with MVD. 
+Same for R221.
+
+
+
+R222(_studentIdnr_, _courseCode_, _classification_) is a MVD. 
+
+studentIdnr ↠ courseCode
+courseCode ↠ classification
+
+R2221(_studentIdnr_, _courseCode_)
+R2222(_courseCode_, _classification_)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
